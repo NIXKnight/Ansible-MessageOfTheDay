@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#
+# 10-sysinfo - generate the system information
+# Copyright (c) 2018 Saad Ali
+#
+# Authors: Saad Ali <saad@nixknight.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+#DATE=$(date "+%A %d %B, %Y @ %k:%M:%S %Z")
+SYSTEM_CORES=$(grep -c processor /proc/cpuinfo)
+LOAD_THRESHOLD="$SYSTEM_CORES.0"
+LOAD_AVERAGE="$(cat /proc/loadavg | awk '{print $1" "$2" "$3}')"
+LOAD_1M=$(echo "${LOAD_AVERAGE}" | awk '{print $1}')
+if [[ $(echo "$LOAD_1M < $LOAD_THRESHOLD" | bc) -eq 1 ]] ; then
+  source 01-sysinfo.j2
+  memoryAndSwapInfo
+  echo
+  mountInfo
+else
+  echo -e "System information will not be shown at this time as load average is higher than $LOAD_THRESHOLD."
+fi
