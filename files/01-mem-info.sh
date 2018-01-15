@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# 10-sysinfo - generate the system information
+# 01-mem-info.sh - Show memory consumption informaiton
 # Copyright (c) 2018 Saad Ali
 #
 # Authors: Saad Ali <saad@nixknight.net>
@@ -37,38 +37,4 @@ function memoryAndSwapInfo() {
   echo -e "RAM Cached: $(pcGen $RAM_BUFF)%\tRAM Free: $(pcGen $RAM_FREE)%"
   echo -e "RAM Available: $(pcGen $RAM_AVAILABLE)%\tTotal SWAP: $SWAP_TOTAL MiB"
   echo -e "SWAP Used: $(pcGen $SWAP_USED)%\t\tSWAP Free: $(pcGen $SWAP_FREE)%"
-}
-
-function mountInfo() {
-  local DF_OUTPUT="$(df -h)"
-  local MOUNTPOINTS="/"
-  for MOUNTPOINT in $MOUNTPOINTS ; do
-    local USED_PC=$(echo "${DF_OUTPUT}" | grep "$MOUNTPOINT$" | awk '{print $5}')
-    echo -e "Total Storage Used on $MOUNTPOINT: $USED_PC"
-  done
-}
-
-function networkInfo() {
-  local IFACES=$(ls /sys/class/net)
-  for IFACE in $IFACES ; do
-    local IFACE_ADDRESS=$(ifdata -pa $IFACE)
-    if [[ "$IFACE_ADDRESS" != "NON-IP" ]] ; then
-      echo -e "Interface $IFACE IP Address: $IFACE_ADDRESS"
-    fi
-  done
-}
-
-function updatesInfo() {
-  local DIST_UPGRADE_OUTPUT="$(apt-get dist-upgrade -s | grep Inst)"
-  local TOTAL_UPDATES=$(echo ${DIST_UPGRADE_OUTPUT} | grep -c Inst)
-  local SECURITY_UPDATES=$(echo ${DIST_UPGRADE_OUTPUT} | grep Inst | grep Security -c)
-  if [[ "$TOTAL_UPDATES" -gt 0 ]] ; then
-    echo -e "A total of $TOTAL_UPDATES are pending."
-    if [[ "$SECURITY_UPDATES" -gt 0 ]] ; then
-      echo -e "$SECURITY_UPDATES are security updates."
-    fi
-  else
-    echo -e "There are no updates available at the moment."
-    echo -e "Make sure that apt cache is up-to-date."
-  fi  
 }

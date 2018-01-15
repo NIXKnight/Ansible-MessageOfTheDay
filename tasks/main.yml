@@ -1,2 +1,57 @@
 ---
 # tasks file for Ansible-MessageOfTheDay
+- name: Create MessageOfTheDay Directory
+  file: path=/usr/share/MessageOfTheDay state=directory mode=0755
+
+- name: Remove /etc/motd
+  file: path=/etc/motd state=absent
+
+- name: Create /etc/update-motd.d Directory
+  file: path=/etc/update-motd.d state=directory mode=0755
+  when: ansible_distribution_release == 'jessie'
+
+- name: Remove Existing Script(s) in /etc/update-motd.d
+  shell: rm -rf /etc/update-motd.d/*
+  when: ansible_distribution_release == 'stretch'
+
+- name: Add New MOTD Script
+  template: src=templates/10-getinfo.j2 dest=/etc/update-motd.d/10-getinfo owner=root group=root mode=0755
+
+- name: Install bc Package
+  apt: pkg=bc state=installed update_cache=yes
+
+- name: Install figlet Package
+  apt: pkg=figlet state=installed update_cache=yes
+  when: figlet_hostname
+
+- name: Install moreutils Package
+  apt: pkg=moreutils state=installed update_cache=yes
+  when: network_info
+
+- name: Set Figlet Hostname at MOTD
+  copy: src=files/00-figlet.sh dest=/usr/share/MessageOfTheDay/00-figlet.sh owner=root group=root mode=0644
+  when: figlet_hostname
+
+- name: Set Header at MOTD
+  copy: src=files/00-header.sh dest=/usr/share/MessageOfTheDay/00-header.sh owner=root group=root mode=0644
+  when: display_header
+
+- name: Set Memory Informaiton at MOTD
+  copy: src=files/01-mem-info.sh dest=/usr/share/MessageOfTheDay/01-mem-info.sh owner=root group=root mode=0644
+  when: memory_info
+
+- name: Set Mount Informaiton at MOTD
+  copy: src=files/02-mount-info.sh dest=/usr/share/MessageOfTheDay/02-mount-info.sh owner=root group=root mode=0644
+  when: mount_info
+
+- name: Set Network Informaiton at MOTD
+  copy: src=files/03-network-info.sh dest=/usr/share/MessageOfTheDay/03-network-info.sh owner=root group=root mode=0644
+  when: network_info
+
+- name: Set Package Updates Informaiton at MOTD
+  copy: src=files/04-pkg-updates.sh dest=/usr/share/MessageOfTheDay/04-pkg-updates.sh owner=root group=root mode=0644
+  when: pkg_info
+
+- name: Link New MOTD
+  file: src=/run/motd dest=/run/motd.dynamic state=link force=yes
+  when: ansible_distribution_release == 'jessie'

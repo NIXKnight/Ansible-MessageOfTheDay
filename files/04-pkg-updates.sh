@@ -1,11 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 #
-# 00-header.sh - create the header of the MOTD
-# Copyright (c) 2013 Nick Charlton
-# Copyright (c) 2009-2010 Canonical Ltd.
+# 04-pkg-updates.sh - Show network information
+# Copyright (c) 2018 Saad Ali
 #
 # Authors: Saad Ali <saad@nixknight.net>
-#          Dustin Kirkland <kirkland@canonical.com> (Original author)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,12 +19,17 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-[ -r /etc/lsb-release ] && . /etc/lsb-release
-
-if [ -z "$DISTRIB_DESCRIPTION" ] && [ -x /usr/bin/lsb_release ]; then
-  # Fall back to using the very slow lsb_release utility
-  DISTRIB_DESCRIPTION=$(lsb_release -s -d)
-fi
-
-printf "Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "$(uname -r)"
-printf "\n"
+function updatesInfo() {
+  local DIST_UPGRADE_OUTPUT="$(apt-get dist-upgrade -s | grep Inst)"
+  local TOTAL_UPDATES=$(echo "${DIST_UPGRADE_OUTPUT}" | grep -c Inst)
+  local SECURITY_UPDATES=$(echo "${DIST_UPGRADE_OUTPUT}" | grep Inst | grep Security -c)
+  if [[ "$TOTAL_UPDATES" -gt 0 ]] ; then
+    echo -e "A total of $TOTAL_UPDATES are pending."
+    if [[ "$SECURITY_UPDATES" -gt 0 ]] ; then
+      echo -e "$SECURITY_UPDATES are security updates."
+    fi
+  else
+    echo -e "There are no updates available at the moment."
+    echo -e "Make sure that apt cache is up-to-date."
+  fi  
+}

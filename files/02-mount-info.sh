@@ -1,11 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 #
-# 00-header.sh - create the header of the MOTD
-# Copyright (c) 2013 Nick Charlton
-# Copyright (c) 2009-2010 Canonical Ltd.
+# 02-mount-info.sh - Show mount information
+# Copyright (c) 2018 Saad Ali
 #
 # Authors: Saad Ali <saad@nixknight.net>
-#          Dustin Kirkland <kirkland@canonical.com> (Original author)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,12 +19,10 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-[ -r /etc/lsb-release ] && . /etc/lsb-release
-
-if [ -z "$DISTRIB_DESCRIPTION" ] && [ -x /usr/bin/lsb_release ]; then
-  # Fall back to using the very slow lsb_release utility
-  DISTRIB_DESCRIPTION=$(lsb_release -s -d)
-fi
-
-printf "Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "$(uname -r)"
-printf "\n"
+function mountInfo() {
+  local DF_OUTPUT="$(df -h)"
+  for MOUNTPOINT in $MOUNTPOINTS ; do
+    local USED_PC=$(echo "${DF_OUTPUT}" | grep "$MOUNTPOINT$" | awk '{print $5}')
+    echo -e "Total Storage Used on $MOUNTPOINT: $USED_PC"
+  done
+}

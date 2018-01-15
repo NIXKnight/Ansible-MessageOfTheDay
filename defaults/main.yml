@@ -1,2 +1,10 @@
 ---
 # defaults file for Ansible-MessageOfTheDay
+runtime: "+%A %d %B, %Y @ %k:%M:%S %Z"
+mount_points: "/"
+network_info: False
+mount_info: True
+figlet_hostname: True
+display_header: True
+memory_info: True
+pkg_info: True

@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+#
+# 10-sysinfo - generate the system information
+# Copyright (c) 2018 Saad Ali
+#
+# Authors: Saad Ali <saad@nixknight.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+{% if mount_info %}
+source /usr/share/MessageOfTheDay/00-figlet.sh
+{% endif %}
+source /usr/share/MessageOfTheDay/00-header.sh
+
+SYSTEM_CORES=$(grep -c processor /proc/cpuinfo)
+LOAD_THRESHOLD="$SYSTEM_CORES.0"
+LOAD_AVERAGE="$(cat /proc/loadavg | awk '{print $1" "$2" "$3}')"
+LOAD_1M=$(echo "${LOAD_AVERAGE}" | awk '{print $1}')
+
+if [[ $(echo "$LOAD_1M < $LOAD_THRESHOLD" | bc) -eq 1 ]] ; then
+  DATE=$(date "{{ runtime }}")
+  echo -e "System Information as of $DATE\n"
+  echo -e "Average System Load: $LOAD_AVERAGE\n"
+  {% if memory_info %}
+  source /usr/share/MessageOfTheDay/01-mem-info.sh
+  memoryAndSwapInfo
+  {% endif %}
+  {% if mount_info %}
+  source /usr/share/MessageOfTheDay/02-mount-info.sh
+  MOUNTPOINTS="{{ mount_points }}"
+  echo
+  mountInfo
+  {% endif %}
+  {% if network_info %}
+  source /usr/share/MessageOfTheDay/03-network-info.sh
+  echo
+  networkInfo
+  {% endif %}
+  {% if pkg_info %}
+  source /usr/share/MessageOfTheDay/04-pkg-updates.sh
+  echo
+  updatesInfo
+  {% endif %}
+  echo
+else
+  echo -e "System information will not be shown at this time as load average is higher than $LOAD_THRESHOLD."
+fi

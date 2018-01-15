@@ -5,7 +5,7 @@
 # Copyright (c) 2009-2010 Canonical Ltd.
 #
 # Authors: Saad Ali <saad@nixknight.net>
-#          Dustin Kirkland <kirkland@canonical.com> (Original author)
+#          Nick Charlton <hello@nickcharlton.net>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,12 +21,5 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-[ -r /etc/lsb-release ] && . /etc/lsb-release
-
-if [ -z "$DISTRIB_DESCRIPTION" ] && [ -x /usr/bin/lsb_release ]; then
-  # Fall back to using the very slow lsb_release utility
-  DISTRIB_DESCRIPTION=$(lsb_release -s -d)
-fi
-
-printf "Welcome to %s (%s).\n" "$DISTRIB_DESCRIPTION" "$(uname -r)"
-printf "\n"
+figlet $(hostname)
+echo

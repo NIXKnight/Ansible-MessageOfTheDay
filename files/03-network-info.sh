@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
-# 10-sysinfo - generate the system information
+# 03-network-info.sh - Show network information
 # Copyright (c) 2018 Saad Ali
 #
 # Authors: Saad Ali <saad@nixknight.net>
@@ -19,25 +19,12 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-source ../files/00-header.sh
-
-SYSTEM_CORES=$(grep -c processor /proc/cpuinfo)
-LOAD_THRESHOLD="$SYSTEM_CORES.0"
-LOAD_AVERAGE="$(cat /proc/loadavg | awk '{print $1" "$2" "$3}')"
-LOAD_1M=$(echo "${LOAD_AVERAGE}" | awk '{print $1}')
-
-if [[ $(echo "$LOAD_1M < $LOAD_THRESHOLD" | bc) -eq 1 ]] ; then
-  DATE=$(date "+%A %d %B, %Y @ %k:%M:%S %Z")
-  source ../files/01-sysinfo.sh
-  echo -e "System Information as of $DATE\n"
-  echo -e "Average System Load: $LOAD_AVERAGE\n"
-  memoryAndSwapInfo
-  echo
-  mountInfo
-  echo
-  networkInfo
-  echo
-  updatesInfo
-else
-  echo -e "System information will not be shown at this time as load average is higher than $LOAD_THRESHOLD."
-fi
+function networkInfo() {
+  local IFACES=$(ls /sys/class/net)
+  for IFACE in $IFACES ; do
+    local IFACE_ADDRESS=$(ifdata -pa $IFACE)
+    if [[ "$IFACE_ADDRESS" != "NON-IP" ]] ; then
+      echo -e "Interface $IFACE IP Address: $IFACE_ADDRESS"
+    fi
+  done
+}
