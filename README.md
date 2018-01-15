@@ -4,21 +4,28 @@ Ansible-MessageOfTheDay is an Ansible role for configuring Ubuntu-like Message O
 
 ## **Requirements**
 
-At the moment this role is being written and tested for Debian. It may evolve to include other major distributions (except Ubuntu).
+At the moment this role is being written for Debian (Jessie and Stretch). It may evolve to include other major distributions (except Ubuntu).
 
 ## **Role Variables**
 
+There are 8 role variables:
+```
+runtime
+mount_points
+network_info
+mount_info
+figlet_hostname
+display_header
+memory_info
+pkg_info
+```
 ## **Dependencies**
 
 This role doesn't depends on any other role for execution.
 
 ## **Example Playbook**
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+Examples will be included later on how to use role variables.
 
 ## **License**
 
