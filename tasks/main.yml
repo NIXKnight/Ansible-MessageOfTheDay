@@ -53,5 +53,5 @@
   when: pkg_info
 
 - name: Link New MOTD
-  file: src=/run/motd dest=/run/motd.dynamic state=link force=yes
+  file: src=/run/motd dest=/etc/motd state=link force=yes
   when: ansible_distribution_release == 'jessie'
