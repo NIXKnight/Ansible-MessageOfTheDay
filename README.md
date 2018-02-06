@@ -68,7 +68,7 @@ A total of 17 are pending.
 17 are security updates.
 ```
 
-If, for example, you want to disaply network information and modify teh date format:
+If, for example, you want to disaply network information and modify date format:
 
     - hosts: servers
       gather_facts: True
