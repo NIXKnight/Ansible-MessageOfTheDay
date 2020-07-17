@@ -18,14 +18,14 @@
   template: src=templates/10-getinfo.j2 dest=/etc/update-motd.d/10-getinfo owner=root group=root mode=0755
 
 - name: Install bc Package
-  apt: pkg=bc state=installed update_cache=yes
+  apt: pkg=bc state=present update_cache=yes
 
 - name: Install figlet Package
-  apt: pkg=figlet state=installed update_cache=yes
+  apt: pkg=figlet state=present update_cache=yes
   when: figlet_hostname
 
 - name: Install moreutils Package
-  apt: pkg=moreutils state=installed update_cache=yes
+  apt: pkg=moreutils state=present update_cache=yes
   when: network_info
 
 - name: Set Figlet Hostname at MOTD
